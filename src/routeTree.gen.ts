@@ -10,33 +10,180 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DispatchRouteImport } from './routes/dispatch'
+import { Route as EventsRouteImport } from './routes/events'
+import { Route as IntakeRouteImport } from './routes/intake'
+import { Route as InventoryRouteImport } from './routes/inventory'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as PrintingRouteImport } from './routes/printing'
+import { Route as ReceiptsRouteImport } from './routes/receipts'
+import { Route as StatesRouteImport } from './routes/states'
+import { Route as TransitRouteImport } from './routes/transit'
+import { Route as DistrictsIndexRouteImport } from './routes/districts.index'
+import { Route as DistrictsDistrictIdRouteImport } from './routes/districts.$districtId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DispatchRoute = DispatchRouteImport.update({
+  id: '/dispatch',
+  path: '/dispatch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntakeRoute = IntakeRouteImport.update({
+  id: '/intake',
+  path: '/intake',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InventoryRoute = InventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrintingRoute = PrintingRouteImport.update({
+  id: '/printing',
+  path: '/printing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReceiptsRoute = ReceiptsRouteImport.update({
+  id: '/receipts',
+  path: '/receipts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatesRoute = StatesRouteImport.update({
+  id: '/states',
+  path: '/states',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TransitRoute = TransitRouteImport.update({
+  id: '/transit',
+  path: '/transit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DistrictsIndexRoute = DistrictsIndexRouteImport.update({
+  id: '/districts/',
+  path: '/districts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DistrictsDistrictIdRoute = DistrictsDistrictIdRouteImport.update({
+  id: '/districts/$districtId',
+  path: '/districts/$districtId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dispatch': typeof DispatchRoute
+  '/events': typeof EventsRoute
+  '/intake': typeof IntakeRoute
+  '/inventory': typeof InventoryRoute
+  '/login': typeof LoginRoute
+  '/printing': typeof PrintingRoute
+  '/receipts': typeof ReceiptsRoute
+  '/states': typeof StatesRoute
+  '/transit': typeof TransitRoute
+  '/districts/$districtId': typeof DistrictsDistrictIdRoute
+  '/districts/': typeof DistrictsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dispatch': typeof DispatchRoute
+  '/events': typeof EventsRoute
+  '/intake': typeof IntakeRoute
+  '/inventory': typeof InventoryRoute
+  '/login': typeof LoginRoute
+  '/printing': typeof PrintingRoute
+  '/receipts': typeof ReceiptsRoute
+  '/states': typeof StatesRoute
+  '/transit': typeof TransitRoute
+  '/districts/$districtId': typeof DistrictsDistrictIdRoute
+  '/districts': typeof DistrictsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dispatch': typeof DispatchRoute
+  '/events': typeof EventsRoute
+  '/intake': typeof IntakeRoute
+  '/inventory': typeof InventoryRoute
+  '/login': typeof LoginRoute
+  '/printing': typeof PrintingRoute
+  '/receipts': typeof ReceiptsRoute
+  '/states': typeof StatesRoute
+  '/transit': typeof TransitRoute
+  '/districts/$districtId': typeof DistrictsDistrictIdRoute
+  '/districts/': typeof DistrictsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/dispatch'
+    | '/events'
+    | '/intake'
+    | '/inventory'
+    | '/login'
+    | '/printing'
+    | '/receipts'
+    | '/states'
+    | '/transit'
+    | '/districts/$districtId'
+    | '/districts/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/dispatch'
+    | '/events'
+    | '/intake'
+    | '/inventory'
+    | '/login'
+    | '/printing'
+    | '/receipts'
+    | '/states'
+    | '/transit'
+    | '/districts/$districtId'
+    | '/districts'
+  id:
+    | '__root__'
+    | '/'
+    | '/dispatch'
+    | '/events'
+    | '/intake'
+    | '/inventory'
+    | '/login'
+    | '/printing'
+    | '/receipts'
+    | '/states'
+    | '/transit'
+    | '/districts/$districtId'
+    | '/districts/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DispatchRoute: typeof DispatchRoute
+  EventsRoute: typeof EventsRoute
+  IntakeRoute: typeof IntakeRoute
+  InventoryRoute: typeof InventoryRoute
+  LoginRoute: typeof LoginRoute
+  PrintingRoute: typeof PrintingRoute
+  ReceiptsRoute: typeof ReceiptsRoute
+  StatesRoute: typeof StatesRoute
+  TransitRoute: typeof TransitRoute
+  DistrictsDistrictIdRoute: typeof DistrictsDistrictIdRoute
+  DistrictsIndexRoute: typeof DistrictsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +195,99 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dispatch': {
+      id: '/dispatch'
+      path: '/dispatch'
+      fullPath: '/dispatch'
+      preLoaderRoute: typeof DispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/intake': {
+      id: '/intake'
+      path: '/intake'
+      fullPath: '/intake'
+      preLoaderRoute: typeof IntakeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inventory': {
+      id: '/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof InventoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/printing': {
+      id: '/printing'
+      path: '/printing'
+      fullPath: '/printing'
+      preLoaderRoute: typeof PrintingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/receipts': {
+      id: '/receipts'
+      path: '/receipts'
+      fullPath: '/receipts'
+      preLoaderRoute: typeof ReceiptsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/states': {
+      id: '/states'
+      path: '/states'
+      fullPath: '/states'
+      preLoaderRoute: typeof StatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transit': {
+      id: '/transit'
+      path: '/transit'
+      fullPath: '/transit'
+      preLoaderRoute: typeof TransitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/districts/': {
+      id: '/districts/'
+      path: '/districts'
+      fullPath: '/districts/'
+      preLoaderRoute: typeof DistrictsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/districts/$districtId': {
+      id: '/districts/$districtId'
+      path: '/districts/$districtId'
+      fullPath: '/districts/$districtId'
+      preLoaderRoute: typeof DistrictsDistrictIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DispatchRoute: DispatchRoute,
+  EventsRoute: EventsRoute,
+  IntakeRoute: IntakeRoute,
+  InventoryRoute: InventoryRoute,
+  LoginRoute: LoginRoute,
+  PrintingRoute: PrintingRoute,
+  ReceiptsRoute: ReceiptsRoute,
+  StatesRoute: StatesRoute,
+  TransitRoute: TransitRoute,
+  DistrictsDistrictIdRoute: DistrictsDistrictIdRoute,
+  DistrictsIndexRoute: DistrictsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
