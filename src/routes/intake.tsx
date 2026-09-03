@@ -24,7 +24,7 @@ const field =
 function Intake() {
   const [expected, setExpected] = useState(84000);
   const [counted, setCounted] = useState(84000);
-  const [district, setDistrict] = useState(districts[0].name);
+  const [district, setDistrict] = useState(districts[0]!.name);
   const [saving, setSaving] = useState(false);
   const variance = counted - expected;
 

@@ -51,7 +51,7 @@ function Receipts() {
                     {r.variance || "0"}
                   </td>
                   <td className="px-4 py-2.5">
-                    <StatusPill health={map[r.status]}>{r.status}</StatusPill>
+                    <StatusPill health={map[r.status] ?? "idle"}>{r.status}</StatusPill>
                   </td>
                 </tr>
               ))}

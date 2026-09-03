@@ -38,7 +38,7 @@ function DistrictDetail() {
     <AppShell
       title={d.name}
       subtitle={`${d.state} · owner ${d.owner}`}
-      actions={<StatusPill health={d.health}>{STAGES[stageIdx].label}</StatusPill>}
+      actions={<StatusPill health={d.health}>{STAGES[stageIdx]?.label ?? "—"}</StatusPill>}
     >
       <Link
         to="/districts"
@@ -53,7 +53,7 @@ function DistrictDetail() {
             <Metric label="Planned" value={fmt(d.planned)} sub="units" />
             <Metric label="Completed" value={fmt(d.done)} health="ok" trend={d.flow} />
             <Metric label="Blocked" value={d.blocked ? fmt(d.blocked) : "0"} health={d.blocked ? "crit" : "idle"} />
-            <Metric label="ETA" value={d.eta.split(" · ")[1]} sub={d.eta.split(" · ")[0]} health={d.health} />
+            <Metric label="ETA" value={d.eta.split(" · ")[1] ?? d.eta} sub={d.eta.split(" · ")[0]} health={d.health} />
           </Panel>
 
           <Panel title="Chain of custody" bodyClassName="p-4 space-y-4">
