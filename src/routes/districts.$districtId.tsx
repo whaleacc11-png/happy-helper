@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
 import { AppShell } from "@/components/humbee/app-shell";
-import { Dot, Metric, Panel, Ratio, Spark, StageBar, StatusPill } from "@/components/humbee/primitives";
+import { Dot, Metric, Panel, Ratio, Spark, StatusPill } from "@/components/humbee/primitives";
 import { consignments, districts, events, fmt, STAGES } from "@/lib/humbee-data";
 
 export const Route = createFileRoute("/districts/$districtId")({
