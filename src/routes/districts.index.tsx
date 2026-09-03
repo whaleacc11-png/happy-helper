@@ -34,13 +34,13 @@ function Districts() {
       <Panel
         title="Coverage"
         action={
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 overflow-x-auto">
             {filters.map((x) => (
               <button
                 key={x.key}
                 onClick={() => setF(x.key)}
                 className={cn(
-                  "rounded px-2 py-1 text-[11px] transition-colors",
+                  "shrink-0 rounded px-2 py-1 text-[11px] transition-colors",
                   f === x.key
                     ? "bg-accent text-foreground"
                     : "text-muted-foreground hover:bg-surface-raised hover:text-foreground",
@@ -56,8 +56,34 @@ function Districts() {
         {rows.length === 0 ? (
           <EmptyState title="No districts in this state" hint="Change the filter to see other districts." />
         ) : (
-          <table className="w-full min-w-[46rem] text-[13px]">
+          <>
+          <div className="divide-y divide-border md:hidden">
+            {rows.map((d) => (
+              <Link
+                key={d.id}
+                to="/districts/$districtId"
+                params={{ districtId: d.id }}
+                className="block space-y-2 px-4 py-3 transition-colors active:bg-surface-raised"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Dot health={d.health} pulse={d.health === "crit"} />
+                  <span className="text-[13px] font-medium">{d.name}</span>
+                  <span className="text-[11px] text-muted-foreground">{d.state}</span>
+                  <span className="num ml-auto text-[11px] text-muted-foreground">{d.eta}</span>
+                </div>
+                <Ratio done={d.done} planned={d.planned} />
+                <div className="flex items-center justify-between">
+                  <StageBar current={d.stage} compact />
+                  <span className="num text-[10px] text-muted-foreground">
+                    {d.blocked ? `${fmt(d.blocked)} blocked` : d.owner}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <table className="hidden w-full min-w-[46rem] text-[13px] md:table">
             <thead>
+
               <tr className="border-b border-border">
                 {["District", "Stage", "Completion", "Blocked", "Owner", "ETA"].map((h) => (
                   <th key={h} className="label-xs px-4 py-2 text-left font-normal">
