@@ -122,7 +122,9 @@ function Districts() {
               ))}
             </tbody>
           </table>
+          </>
         )}
+
       </Panel>
     </AppShell>
   );
