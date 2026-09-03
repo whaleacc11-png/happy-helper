@@ -10,12 +10,36 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DispatchRouteImport } from './routes/dispatch'
+import { Route as InventoryRouteImport } from './routes/inventory'
+import { Route as PrintingRouteImport } from './routes/printing'
+import { Route as TransitRouteImport } from './routes/transit'
 import { Route as DistrictsIndexRouteImport } from './routes/districts.index'
 import { Route as DistrictsDistrictIdRouteImport } from './routes/districts.$districtId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DispatchRoute = DispatchRouteImport.update({
+  id: '/dispatch',
+  path: '/dispatch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InventoryRoute = InventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrintingRoute = PrintingRouteImport.update({
+  id: '/printing',
+  path: '/printing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TransitRoute = TransitRouteImport.update({
+  id: '/transit',
+  path: '/transit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DistrictsIndexRoute = DistrictsIndexRouteImport.update({
@@ -31,30 +55,68 @@ const DistrictsDistrictIdRoute = DistrictsDistrictIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dispatch': typeof DispatchRoute
+  '/inventory': typeof InventoryRoute
+  '/printing': typeof PrintingRoute
+  '/transit': typeof TransitRoute
   '/districts/$districtId': typeof DistrictsDistrictIdRoute
   '/districts/': typeof DistrictsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dispatch': typeof DispatchRoute
+  '/inventory': typeof InventoryRoute
+  '/printing': typeof PrintingRoute
+  '/transit': typeof TransitRoute
   '/districts/$districtId': typeof DistrictsDistrictIdRoute
   '/districts': typeof DistrictsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dispatch': typeof DispatchRoute
+  '/inventory': typeof InventoryRoute
+  '/printing': typeof PrintingRoute
+  '/transit': typeof TransitRoute
   '/districts/$districtId': typeof DistrictsDistrictIdRoute
   '/districts/': typeof DistrictsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/districts/$districtId' | '/districts/'
+  fullPaths:
+    | '/'
+    | '/dispatch'
+    | '/inventory'
+    | '/printing'
+    | '/transit'
+    | '/districts/$districtId'
+    | '/districts/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/districts/$districtId' | '/districts'
-  id: '__root__' | '/' | '/districts/$districtId' | '/districts/'
+  to:
+    | '/'
+    | '/dispatch'
+    | '/inventory'
+    | '/printing'
+    | '/transit'
+    | '/districts/$districtId'
+    | '/districts'
+  id:
+    | '__root__'
+    | '/'
+    | '/dispatch'
+    | '/inventory'
+    | '/printing'
+    | '/transit'
+    | '/districts/$districtId'
+    | '/districts/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DispatchRoute: typeof DispatchRoute
+  InventoryRoute: typeof InventoryRoute
+  PrintingRoute: typeof PrintingRoute
+  TransitRoute: typeof TransitRoute
   DistrictsDistrictIdRoute: typeof DistrictsDistrictIdRoute
   DistrictsIndexRoute: typeof DistrictsIndexRoute
 }
@@ -66,6 +128,34 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dispatch': {
+      id: '/dispatch'
+      path: '/dispatch'
+      fullPath: '/dispatch'
+      preLoaderRoute: typeof DispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inventory': {
+      id: '/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof InventoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/printing': {
+      id: '/printing'
+      path: '/printing'
+      fullPath: '/printing'
+      preLoaderRoute: typeof PrintingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transit': {
+      id: '/transit'
+      path: '/transit'
+      fullPath: '/transit'
+      preLoaderRoute: typeof TransitRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/districts/': {
@@ -87,6 +177,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DispatchRoute: DispatchRoute,
+  InventoryRoute: InventoryRoute,
+  PrintingRoute: PrintingRoute,
+  TransitRoute: TransitRoute,
   DistrictsDistrictIdRoute: DistrictsDistrictIdRoute,
   DistrictsIndexRoute: DistrictsIndexRoute,
 }
