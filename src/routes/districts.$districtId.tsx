@@ -57,10 +57,18 @@ function DistrictDetail() {
           </Panel>
 
           <Panel title="Chain of custody" bodyClassName="p-4 space-y-4">
-            <StageBar current={d.stage} />
-            <div className="grid grid-cols-7 gap-1 text-center">
+            <div className="grid grid-cols-7 gap-1.5">
               {STAGES.map((s, i) => (
-                <div key={s.key} className="space-y-1">
+                <div key={s.key} className="group space-y-1.5">
+                  <div
+                    className={
+                      i < stageIdx
+                        ? "h-1.5 rounded-full bg-ok/60"
+                        : i === stageIdx
+                          ? "h-1.5 rounded-full bg-primary"
+                          : "h-1.5 rounded-full bg-border-strong"
+                    }
+                  />
                   <div className="label-xs truncate">{s.short}</div>
                   <div
                     className={
@@ -76,6 +84,7 @@ function DistrictDetail() {
                 </div>
               ))}
             </div>
+
             <div className="pt-1">
               <Ratio done={d.done} planned={d.planned} />
             </div>
