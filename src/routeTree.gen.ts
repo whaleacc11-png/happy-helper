@@ -21,6 +21,7 @@ import { Route as StatesRouteImport } from './routes/states'
 import { Route as TransitRouteImport } from './routes/transit'
 import { Route as DistrictsIndexRouteImport } from './routes/districts.index'
 import { Route as DistrictsDistrictIdRouteImport } from './routes/districts.$districtId'
+import { Route as EventsEventIdRouteImport } from './routes/events.$eventId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -82,11 +83,16 @@ const DistrictsDistrictIdRoute = DistrictsDistrictIdRouteImport.update({
   path: '/districts/$districtId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EventsEventIdRoute = EventsEventIdRouteImport.update({
+  id: '/$eventId',
+  path: '/$eventId',
+  getParentRoute: () => EventsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dispatch': typeof DispatchRoute
-  '/events': typeof EventsRoute
+  '/events': typeof EventsRouteWithChildren
   '/intake': typeof IntakeRoute
   '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
@@ -95,12 +101,13 @@ export interface FileRoutesByFullPath {
   '/states': typeof StatesRoute
   '/transit': typeof TransitRoute
   '/districts/$districtId': typeof DistrictsDistrictIdRoute
+  '/events/$eventId': typeof EventsEventIdRoute
   '/districts/': typeof DistrictsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dispatch': typeof DispatchRoute
-  '/events': typeof EventsRoute
+  '/events': typeof EventsRouteWithChildren
   '/intake': typeof IntakeRoute
   '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
@@ -109,13 +116,14 @@ export interface FileRoutesByTo {
   '/states': typeof StatesRoute
   '/transit': typeof TransitRoute
   '/districts/$districtId': typeof DistrictsDistrictIdRoute
+  '/events/$eventId': typeof EventsEventIdRoute
   '/districts': typeof DistrictsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dispatch': typeof DispatchRoute
-  '/events': typeof EventsRoute
+  '/events': typeof EventsRouteWithChildren
   '/intake': typeof IntakeRoute
   '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/states': typeof StatesRoute
   '/transit': typeof TransitRoute
   '/districts/$districtId': typeof DistrictsDistrictIdRoute
+  '/events/$eventId': typeof EventsEventIdRoute
   '/districts/': typeof DistrictsIndexRoute
 }
 export interface FileRouteTypes {
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/states'
     | '/transit'
     | '/districts/$districtId'
+    | '/events/$eventId'
     | '/districts/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/states'
     | '/transit'
     | '/districts/$districtId'
+    | '/events/$eventId'
     | '/districts'
   id:
     | '__root__'
@@ -168,13 +179,14 @@ export interface FileRouteTypes {
     | '/states'
     | '/transit'
     | '/districts/$districtId'
+    | '/events/$eventId'
     | '/districts/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DispatchRoute: typeof DispatchRoute
-  EventsRoute: typeof EventsRoute
+  EventsRoute: typeof EventsRouteWithChildren
   IntakeRoute: typeof IntakeRoute
   InventoryRoute: typeof InventoryRoute
   LoginRoute: typeof LoginRoute
@@ -272,13 +284,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DistrictsDistrictIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/events/$eventId': {
+      id: '/events/$eventId'
+      path: '/$eventId'
+      fullPath: '/events/$eventId'
+      preLoaderRoute: typeof EventsEventIdRouteImport
+      parentRoute: typeof EventsRoute
+    }
   }
 }
+
+interface EventsRouteChildren {
+  EventsEventIdRoute: typeof EventsEventIdRoute
+}
+
+const EventsRouteChildren: EventsRouteChildren = {
+  EventsEventIdRoute: EventsEventIdRoute,
+}
+
+const EventsRouteWithChildren =
+  EventsRoute._addFileChildren(EventsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DispatchRoute: DispatchRoute,
-  EventsRoute: EventsRoute,
+  EventsRoute: EventsRouteWithChildren,
   IntakeRoute: IntakeRoute,
   InventoryRoute: InventoryRoute,
   LoginRoute: LoginRoute,
