@@ -1,203 +1,163 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, ShieldAlert } from "lucide-react";
-import { AppShell } from "@/components/humbee/app-shell";
+import { useState } from "react";
+import { Shell } from "@/components/hb/shell";
+import { DestinationPanel } from "@/components/hb/destination-panel";
+import { Empty, Marker, Qty, Section, Tag } from "@/components/hb/ui";
 import {
-  Dot,
-  Metric,
-  Panel,
-  Ratio,
-  StageBar,
-  StatusPill,
-} from "@/components/humbee/primitives";
-import { consignments, districts, events, fmt, STAGES } from "@/lib/humbee-data";
+  DEST_STATE,
+  activity,
+  destState,
+  destTotals,
+  destShipments,
+  destinations,
+  eventById,
+  shipments,
+  type Destination,
+} from "@/lib/data";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Today — HumbEE Operations" },
+      { title: "Attention — HumbEE" },
       {
         name: "description",
         content:
-          "Live operational picture across printing, allocation, dispatch, transit and receipt for every district.",
+          "Destinations blocked, unsent, delayed or awaiting organiser confirmation — the operations worklist for today.",
       },
-      { property: "og:title", content: "Today — HumbEE Operations" },
-      {
-        property: "og:description",
-        content: "Where it is, what is happening, what needs attention, what to do next.",
-      },
+      { property: "og:title", content: "Attention — HumbEE" },
+      { property: "og:description", content: "What needs attention now, across every event destination." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Today,
+  component: Attention,
 });
 
-function Today() {
-  const planned = districts.reduce((a, d) => a + d.planned, 0);
-  const done = districts.reduce((a, d) => a + d.done, 0);
-  const blocked = districts.reduce((a, d) => a + d.blocked, 0);
-  const attention = districts.filter((d) => d.health === "crit" || d.health === "warn");
+type Bucket = {
+  key: string;
+  title: string;
+  why: string;
+  tone: "bad" | "warn" | "info";
+  rows: Destination[];
+};
 
-  const stageLoad = STAGES.map((s) => ({
-    ...s,
-    n: districts.filter((d) => d.stage === s.key).length,
-    units: districts.filter((d) => d.stage === s.key).reduce((a, d) => a + d.planned, 0),
-  }));
-  const maxUnits = Math.max(...stageLoad.map((s) => s.units), 1);
+function Attention() {
+  const [sel, setSel] = useState<Destination | null>(null);
+
+  const exceptions = destinations.filter((d) => destState(d) === "exception");
+  const unsent = destinations.filter((d) => {
+    const s = destState(d);
+    return s === "unshipped" || s === "partial";
+  });
+  const delayed = destinations.filter((d) =>
+    destShipments(d.id).some((s) => s.status === "in_transit" && !!s.note),
+  );
+  const unconfirmed = destinations.filter((d) => destState(d) === "delivered");
+
+  const buckets: Bucket[] = [
+    { key: "exc", title: "Blocked", why: "Cannot progress without a decision", tone: "bad", rows: exceptions },
+    { key: "uns", title: "Not fully sent", why: "Material still owed to the venue", tone: "warn", rows: unsent.filter((d) => destState(d) !== "exception") },
+    { key: "dly", title: "At risk in transit", why: "Courier reported a delay", tone: "warn", rows: delayed },
+    { key: "unc", title: "Awaiting confirmation", why: "Delivered, organiser has not signed off", tone: "info", rows: unconfirmed },
+  ];
+
+  const clear = buckets.every((b) => b.rows.length === 0);
 
   return (
-    <AppShell title="Today" subtitle="Thu 03 Sep · 16:55 IST · cycle 4 of 7">
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
+    <Shell title="Attention" question="What needs attention now?">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_19rem]">
         <div className="space-y-4">
-          <Panel bodyClassName="grid grid-cols-2 divide-x divide-y divide-border md:grid-cols-4 md:divide-y-0">
-            <Metric
-              label="Planned"
-              value={fmt(planned)}
-              sub="units this cycle"
-              trend={[20, 30, 38, 45, 52, 60, 68, 74, 80, 88]}
-            />
-            <Metric
-              label="Completed"
-              value={fmt(done)}
-              sub={`${Math.round((done / planned) * 100)}% of plan`}
-              health="ok"
-              trend={[10, 18, 26, 34, 41, 50, 58, 66, 72, 79]}
-            />
-            <Metric
-              label="Blocked"
-              value={fmt(blocked)}
-              sub="2 districts affected"
-              health="crit"
-              trend={[0, 2, 2, 6, 12, 9, 14, 18, 16, 20]}
-            />
-            <Metric
-              label="In transit"
-              value={String(consignments.filter((c) => c.stage === "transit").length)}
-              sub="consignments moving"
-              health="warn"
-              trend={[3, 4, 4, 5, 6, 6, 5, 7, 6, 6]}
-            />
-          </Panel>
-
-          <Panel title="Pipeline load" action={<span className="label-xs">districts / units</span>}>
-            <div className="grid grid-cols-7 gap-px bg-border">
-              {stageLoad.map((s) => (
-                <div
-                  key={s.key}
-                  className="group flex flex-col justify-end gap-2 bg-surface p-3 transition-colors hover:bg-surface-raised"
+          {clear && <Section flush><Empty title="Nothing needs attention" hint="Every destination is sent, delivered and confirmed." /></Section>}
+          {buckets.map(
+            (b) =>
+              b.rows.length > 0 && (
+                <Section
+                  key={b.key}
+                  title={b.title}
+                  meta={b.why}
+                  action={<span className="num text-[12px] text-subtle">{b.rows.length}</span>}
+                  flush
                 >
-                  <div className="flex h-20 items-end">
-                    <div
-                      className="w-full rounded-t bg-primary/25 transition-all duration-500 group-hover:bg-primary/45"
-                      style={{ height: `${Math.max(6, (s.units / maxUnits) * 100)}%` }}
-                    />
-                  </div>
-                  <div className="num text-sm font-semibold">{s.n}</div>
-                  <div className="label-xs truncate">{s.short}</div>
+                  <ul className="divide-border divide-y">
+                    {b.rows.map((d) => {
+                      const t = destTotals(d);
+                      const st = destState(d);
+                      const ev = eventById(d.eventId);
+                      return (
+                        <li key={d.id}>
+                          <button
+                            onClick={() => setSel(d)}
+                            className="hover:bg-surface-sunken grid w-full grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 px-3 py-2.5 text-left transition-colors duration-150 md:grid-cols-[1.4fr_1fr_9rem_7rem]"
+                          >
+                            <span className="flex min-w-0 items-center gap-2">
+                              <Marker tone={b.tone} />
+                              <span className="truncate text-[13px] font-medium">{d.name}</span>
+                              <span className="truncate text-[11.5px] text-subtle">{d.city}</span>
+                            </span>
+                            <span className="hidden truncate text-[12px] text-muted-foreground md:block">
+                              <span className="num">{ev?.code}</span> {ev?.name}
+                            </span>
+                            <span className="text-right md:text-left">
+                              <Qty required={t.required} sent={t.sent} remaining={t.remaining} />
+                            </span>
+                            <span className="hidden items-center justify-between gap-2 md:flex">
+                              <Tag tone={DEST_STATE[st].tone}>{DEST_STATE[st].label}</Tag>
+                              <span className="num text-[11px] text-subtle">{d.needBy}</span>
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </Section>
+              ),
+          )}
+        </div>
+
+        <div className="space-y-4">
+          <Section
+            title="Today"
+            flush
+            action={
+              <Link to="/events" className="text-primary text-[11px] hover:underline">
+                Events
+              </Link>
+            }
+          >
+            <dl className="divide-border divide-y">
+              {[
+                { k: "Destinations open", v: destinations.filter((d) => destState(d) !== "confirmed").length },
+                { k: "Shipments moving", v: shipments.filter((s) => s.status === "in_transit").length },
+                { k: "Delivered, unconfirmed", v: unconfirmed.length },
+                { k: "Exceptions", v: exceptions.length },
+              ].map((r) => (
+                <div key={r.k} className="flex items-baseline justify-between px-3 py-2">
+                  <dt className="text-[12px] text-muted-foreground">{r.k}</dt>
+                  <dd className={cn("num text-[13px]", r.k === "Exceptions" && r.v > 0 && "text-bad")}>{r.v}</dd>
                 </div>
               ))}
-            </div>
-          </Panel>
+            </dl>
+          </Section>
 
-          <Panel
-            title="Needs attention"
-            action={
-              <Link to="/districts" className="text-[11px] text-primary hover:underline">
-                All districts
-              </Link>
-            }
-            bodyClassName="divide-y divide-border"
-          >
-            {attention.map((d) => (
-              <Link
-                key={d.id}
-                to="/districts/$districtId"
-                params={{ districtId: d.id }}
-                className="group flex items-center gap-4 px-4 py-3 transition-colors hover:bg-surface-raised"
-              >
-                <Dot health={d.health} pulse={d.health === "crit"} />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline gap-2">
-                    <span className="truncate text-[13px] font-medium">{d.name}</span>
-                    <span className="truncate text-[11px] text-muted-foreground">{d.state}</span>
+          <Section title="Activity" flush>
+            <ol className="divide-border divide-y">
+              {activity.map((a) => (
+                <li key={a.id} className="flex gap-2.5 px-3 py-2">
+                  <span className="num pt-[3px] text-[11px] text-subtle">{a.at}</span>
+                  <Marker tone={a.tone} className="mt-[7px]" />
+                  <div className="min-w-0">
+                    <p className="text-[12px] leading-snug">{a.text}</p>
+                    <p className="text-[11px] text-subtle">{a.actor}</p>
                   </div>
-                  <p className="truncate text-[11px] text-muted-foreground">{d.lastEvent}</p>
-                </div>
-                <div className="hidden w-40 md:block">
-                  <Ratio done={d.done} planned={d.planned} />
-                </div>
-                <div className="hidden lg:block">
-                  <StageBar current={d.stage} compact />
-                </div>
-                <span className="num w-24 text-right text-[11px] text-muted-foreground">
-                  ETA {d.eta.split(" · ")[1]}
-                </span>
-                <ArrowUpRight className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-              </Link>
-            ))}
-          </Panel>
-        </div>
-
-        <div className="space-y-4">
-          <Panel
-            title="Act now"
-            action={<ShieldAlert className="size-3.5 text-crit" />}
-            bodyClassName="divide-y divide-border"
-          >
-            {[
-              { d: "Nagpur", t: "Re-seal & clear CN-88250", h: "crit" as const, w: "blocking 410 boxes" },
-              { d: "Jaipur", t: "Approve booth list v4", h: "warn" as const, w: "holds allocation" },
-              { d: "Nagpur", t: "Reorder tamper seals", h: "warn" as const, w: "900 below minimum" },
-            ].map((a) => (
-              <div key={a.t} className="flex items-start gap-3 p-3">
-                <Dot health={a.h} pulse={a.h === "crit"} />
-                <div className="min-w-0 flex-1">
-                  <p className="text-[13px] leading-snug font-medium">{a.t}</p>
-                  <p className="text-[11px] text-muted-foreground">
-                    {a.d} · {a.w}
-                  </p>
-                </div>
-                <button className="rounded border border-border px-2 py-1 text-[11px] text-muted-foreground transition-colors hover:border-border-strong hover:bg-accent hover:text-foreground active:scale-[0.97]">
-                  Open
-                </button>
-              </div>
-            ))}
-          </Panel>
-
-          <Panel
-            title="Live feed"
-            action={
-              <Link to="/events" className="text-[11px] text-primary hover:underline">
-                All
-              </Link>
-            }
-            bodyClassName="divide-y divide-border"
-          >
-            {events.slice(0, 5).map((e) => (
-              <div key={e.id} className="flex gap-3 px-3 py-2.5">
-                <span className="num pt-0.5 text-[11px] text-muted-foreground">{e.at}</span>
-                <Dot health={e.health} />
-                <p className="flex-1 text-[12px] leading-snug">{e.text}</p>
-              </div>
-            ))}
-          </Panel>
-
-          <Panel title="Courier status" bodyClassName="p-3 space-y-2.5">
-            {consignments.slice(0, 4).map((c) => (
-              <div key={c.id} className="space-y-1.5">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="num text-[11px]">{c.id}</span>
-                  <StatusPill health={c.health}>{c.progress}%</StatusPill>
-                </div>
-                <div className="h-1 w-full overflow-hidden rounded-full bg-border">
-                  <div
-                    className="h-full rounded-full bg-primary transition-[width] duration-700"
-                    style={{ width: `${c.progress}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </Panel>
+                </li>
+              ))}
+            </ol>
+          </Section>
         </div>
       </div>
-    </AppShell>
+
+      <DestinationPanel destination={sel} onClose={() => setSel(null)} />
+    </Shell>
   );
 }
